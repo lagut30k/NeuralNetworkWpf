@@ -1,0 +1,42 @@
+﻿<Window x:Class="NeuralWpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:NeuralWpf"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="464.77" Width="627.439">
+    <Window.DataContext>
+        <local:MainVm></local:MainVm>
+        <!-- Создаем новый VM и соединяем его со View -->
+    </Window.DataContext>
+    <Grid VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,10,10,10">
+        <Grid.RowDefinitions >
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <Button Content="Run" HorizontalAlignment="Left" Margin="10,10,10,10" Width="75" VerticalAlignment="Top" Grid.Row="0" Grid.Column="0"
+                IsEnabled="{Binding IsStopped, UpdateSourceTrigger=PropertyChanged}"/>
+
+        <Button Content="Full test" Margin="10,10,10,10" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Row="1" Grid.Column="0" 
+                IsEnabled="{Binding IsStopped, UpdateSourceTrigger=PropertyChanged}"/>
+
+        <Button Content="Train" HorizontalAlignment="Left" Margin="10,10,10,10" Grid.Row="2" Grid.Column="0"
+                VerticalAlignment="Top" Width="75"
+                Click="Train_OnClick"
+                IsEnabled="{Binding IsStopped, UpdateSourceTrigger=PropertyChanged}">
+        </Button>
+
+        <Button Content="Stop" HorizontalAlignment="Left" Margin="10,10,10,10" Grid.Row="3" Grid.Column="0"
+                VerticalAlignment="Top" Width="75"
+                IsEnabled="{Binding IsRunning, UpdateSourceTrigger=PropertyChanged}"
+                Click="Stop_OnClick"/>
+        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="160" Grid.Row="0"
+                Grid.RowSpan="4" VerticalAlignment="Top" Width="95"/>
+        <Canvas Name="Canvas" HorizontalAlignment="Left" Height="187" Margin="208,10,-375,-117" Grid.Row="2" Grid.RowSpan="2" VerticalAlignment="Top" Width="262"/>
+        <Image Name="Image" HorizontalAlignment="Left" Height="21" Margin="106,252,-339,-233" Grid.Row="3" VerticalAlignment="Top" Width="328"/>
+    </Grid>
+</Window>

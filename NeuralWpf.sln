@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2002
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeuralWpf", "NeuralWpf\NeuralWpf.csproj", "{9C107108-3CEF-44D7-9DF0-FCAB22E33C7D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Neural.Core", "Neural.Core\Neural.Core.csproj", "{79B5DD92-6976-49A0-971F-04FFB1379125}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Neural.Mnist", "Neural.Mnist\Neural.Mnist.csproj", "{981F33A2-4E7E-4726-8B2D-CAD9810E90D2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9C107108-3CEF-44D7-9DF0-FCAB22E33C7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C107108-3CEF-44D7-9DF0-FCAB22E33C7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C107108-3CEF-44D7-9DF0-FCAB22E33C7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C107108-3CEF-44D7-9DF0-FCAB22E33C7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79B5DD92-6976-49A0-971F-04FFB1379125}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79B5DD92-6976-49A0-971F-04FFB1379125}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79B5DD92-6976-49A0-971F-04FFB1379125}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79B5DD92-6976-49A0-971F-04FFB1379125}.Release|Any CPU.Build.0 = Release|Any CPU
+		{981F33A2-4E7E-4726-8B2D-CAD9810E90D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{981F33A2-4E7E-4726-8B2D-CAD9810E90D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{981F33A2-4E7E-4726-8B2D-CAD9810E90D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{981F33A2-4E7E-4726-8B2D-CAD9810E90D2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {ED33707F-1024-448D-ADF4-42172042E2EB}
+	EndGlobalSection
+EndGlobal
