@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Linq;
+using Neural.Core.Layers;
 using Neural.Core.Providers;
 
 namespace Neural.Core
 {
-    public class NetworkController : IDisposable
+    public class NetworkController
     {
         private readonly ISettingsProvider settingsProvider;
         private readonly Func<IDataProvider> dataProviderFactory;
@@ -19,8 +21,7 @@ namespace Neural.Core
         {
             this.settingsProvider = settingsProvider;
             this.dataProviderFactory = dataProviderFactory;
-            settingsProvider.LayersSettingsChanged += LayersSettingsChangedHandler;
-            ResetNetwork();
+            UpdateNetworkHyperParameters();
         }
         
         public void Train()
@@ -33,7 +34,7 @@ namespace Neural.Core
             {
                 var data = dataProvider.GetTrainData();
                 Network.Train(data.Input, data.Output);
-                if (i % 1000 == 0)
+                if (i % 250 == 0)
                 {
                     ReadyToRun?.Invoke(this, null);
                 }
@@ -49,24 +50,33 @@ namespace Neural.Core
             stopFlag = true;
         }
 
-        private void ResetNetwork()
+        private bool NeedToReinitNetwork()
         {
-            Network = new Network(settingsProvider.LayersSettings);
-            UpdateNetworkHyperParameters();
+            if (settingsProvider.LayersSettings.Count != Network?.Layers?.Count)
+            {
+                return true;
+            }
+            return settingsProvider.LayersSettings.Where((t, i) => !IsLayerChanged(t, Network.Layers[i])).Any();
+        }
+
+        private bool IsLayerChanged(LayerSettings settings, Layer layer)
+        {
+            if (settings.NeuronsCount != layer.Size)
+            {
+                return false;
+            }
+            return layer is InputLayer || settings.HasBias == layer.HasBias;
         }
         
         private void UpdateNetworkHyperParameters()
         {
+            if (NeedToReinitNetwork())
+            {
+                Network = new Network(settingsProvider.LayersSettings);
+            }
             Network.Moment = settingsProvider.Moment;
             Network.LearningRate = settingsProvider.LearningRate;
             Network.DropoutProbability = settingsProvider.DropoutProbability;
-        }
-
-        private void LayersSettingsChangedHandler(object sender, EventArgs args) => ResetNetwork();
-
-        public void Dispose()
-        {
-            settingsProvider.LayersSettingsChanged -= LayersSettingsChangedHandler;
         }
     }
 }

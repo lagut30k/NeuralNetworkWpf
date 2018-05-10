@@ -23,8 +23,6 @@ namespace Neural.Core
 
         public double Moment { get; set; } = 1;
 
-        public static RandomGenerator R = new RandomGenerator();
-
         public IActivationFunction Activation { get; } = new Sigmoid();
 
         public Network(List<LayerSettings> layersHyperParameters)

@@ -3,33 +3,15 @@ using System.Collections.Generic;
 using Neural.Core;
 using Neural.Core.Providers;
 
-//using System.Windows.Forms;
-//using NeuralNetwork.Engine;
-
 namespace NeuralWpf.Providers
 {
     public class SettingsProvider : ISettingsProvider
     {
-        //private readonly TextBox trainLoopsTextBox;
-        //private readonly TextBox learningRateTextBox;
-        //private readonly TextBox dropoutTextBox;
-
-        //public SettingsProvider(TextBox trainLoopsTextBox, TextBox learningRateTextBox, TextBox dropoutTextBox, DataGridView layerDataGridView)
-        //{
-        //    this.trainLoopsTextBox = trainLoopsTextBox;
-        //    this.learningRateTextBox = learningRateTextBox;
-        //    this.dropoutTextBox = dropoutTextBox;
-        //    layerDataGridView.DataSource = new BindingList<LayerSettings>(LayersSettings);
-        //    layerDataGridView.CellValueChanged += (sender, args) => LayersSettingsChanged?.Invoke(this, null);
-        //}
-
-        public SettingsProvider()
+        private readonly MainVm viewModel;
+        
+        public SettingsProvider(MainVm viewModel)
         {
-            //this.trainLoopsTextBox = trainLoopsTextBox;
-            //this.learningRateTextBox = learningRateTextBox;
-            //this.dropoutTextBox = dropoutTextBox;
-            //layerDataGridView.DataSource = new BindingList<LayerSettings>(LayersSettings);
-            //layerDataGridView.CellValueChanged += (sender, args) => LayersSettingsChanged?.Invoke(this, null);
+            this.viewModel = viewModel;
         }
 
         public event EventHandler LayersSettingsChanged;
@@ -41,15 +23,12 @@ namespace NeuralWpf.Providers
             new LayerSettings {NeuronsCount = 10, HasBias = true},
         };
 
-        public double LearningRate => 0.7;
-            //double.TryParse(learningRateTextBox.Text, out var lr) ? lr : 0.07;
+        public double LearningRate => viewModel.LearningRate;
 
-        public double Moment { get; } = 1;
+        public double Moment => viewModel.Moment;
 
-        public double DropoutProbability => 0.1;
-            //double.TryParse(dropoutTextBox.Text, out var lr) ? lr : 0;
+        public double DropoutProbability => viewModel.DropoutProbability;
 
-        public int TrainLoops => 10000;
-            //int.TryParse(trainLoopsTextBox.Text, out var tr) ? tr : 10000;
+        public int TrainLoops => viewModel.TrainLoops;
     }
 }

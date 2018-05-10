@@ -5,38 +5,414 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NeuralWpf"
         mc:Ignorable="d"
-        Title="MainWindow" Height="464.77" Width="627.439">
+        Title="MainWindow" 
+        Width="800" MinWidth="800"
+        Height="450" MinHeight="450">
     <Window.DataContext>
-        <local:MainVm></local:MainVm>
-        <!-- Создаем новый VM и соединяем его со View -->
+        <local:MainVm />
     </Window.DataContext>
-    <Grid VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,10,10,10">
+    <Grid Margin="10,10,10,10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition MinWidth="150" MaxWidth="200"/>
+            <ColumnDefinition MinWidth="200"/>
+            <ColumnDefinition MinWidth="200"/>
+            <ColumnDefinition MinWidth="220"/>
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions >
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
+            <RowDefinition MinHeight="50"/>
+            <RowDefinition MinHeight="50"/>
+            <RowDefinition MinHeight="50"/>
+            <RowDefinition MinHeight="50"/>
+            <RowDefinition MinHeight="150"/>
         </Grid.RowDefinitions>
 
         <Button Content="Run" HorizontalAlignment="Left" Margin="10,10,10,10" Width="75" VerticalAlignment="Top" Grid.Row="0" Grid.Column="0"
-                IsEnabled="{Binding IsStopped, UpdateSourceTrigger=PropertyChanged}"/>
-
+                IsEnabled="{Binding IsStopped, UpdateSourceTrigger=PropertyChanged}"
+                Click="Run_OnClick"/>
+        
         <Button Content="Full test" Margin="10,10,10,10" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Row="1" Grid.Column="0" 
-                IsEnabled="{Binding IsStopped, UpdateSourceTrigger=PropertyChanged}"/>
-
+                IsEnabled="{Binding IsStopped, UpdateSourceTrigger=PropertyChanged}"
+                Click="FullTest_OnClick"/>
+        
         <Button Content="Train" HorizontalAlignment="Left" Margin="10,10,10,10" Grid.Row="2" Grid.Column="0"
                 VerticalAlignment="Top" Width="75"
                 Click="Train_OnClick"
-                IsEnabled="{Binding IsStopped, UpdateSourceTrigger=PropertyChanged}">
-        </Button>
-
+                IsEnabled="{Binding IsStopped, UpdateSourceTrigger=PropertyChanged}" />
+        
         <Button Content="Stop" HorizontalAlignment="Left" Margin="10,10,10,10" Grid.Row="3" Grid.Column="0"
                 VerticalAlignment="Top" Width="75"
-                IsEnabled="{Binding IsRunning, UpdateSourceTrigger=PropertyChanged}"
-                Click="Stop_OnClick"/>
-        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="160" Grid.Row="0"
-                Grid.RowSpan="4" VerticalAlignment="Top" Width="95"/>
-        <Canvas Name="Canvas" HorizontalAlignment="Left" Height="187" Margin="208,10,-375,-117" Grid.Row="2" Grid.RowSpan="2" VerticalAlignment="Top" Width="262"/>
-        <Image Name="Image" HorizontalAlignment="Left" Height="21" Margin="106,252,-339,-233" Grid.Row="3" VerticalAlignment="Top" Width="328"/>
+                Click="Stop_OnClick"
+                IsEnabled="{Binding IsRunning, UpdateSourceTrigger=PropertyChanged}"/>
+        
+        <StackPanel Grid.Row="4" Grid.Column="0">
+            <DockPanel VerticalAlignment="Center" >
+                <TextBlock>Learning rate</TextBlock>
+                <TextBox Text="{Binding LearningRate}" IsEnabled="{Binding IsStopped}" MinWidth="60" HorizontalAlignment="Right" />
+            </DockPanel>
+            <DockPanel VerticalAlignment="Center" >
+                <TextBlock>Moment</TextBlock>
+                <TextBox Text="{Binding Moment}" IsEnabled="{Binding IsStopped}" MinWidth="60" HorizontalAlignment="Right" />
+            </DockPanel>
+            <DockPanel VerticalAlignment="Center" >
+                <TextBlock>Dropout</TextBlock>
+                <TextBox Text="{Binding DropoutProbability}" IsEnabled="{Binding IsStopped}" MinWidth="60" HorizontalAlignment="Right" />
+            </DockPanel>
+            <DockPanel VerticalAlignment="Center" >
+                <TextBlock>Train Loops</TextBlock>
+                <TextBox Text="{Binding TrainLoops}" IsEnabled="{Binding IsStopped}" MinWidth="60" HorizontalAlignment="Right" />
+            </DockPanel>
+        </StackPanel>
+        
+        <ListView Name="LayersListView" Grid.Row="0" Grid.Column="1" Grid.RowSpan="4" 
+                  ItemsSource="{Binding Layers}" 
+                  IsEnabled="{Binding IsStopped, UpdateSourceTrigger=PropertyChanged}"
+                  VerticalContentAlignment="Top"
+                  ScrollViewer.VerticalScrollBarVisibility="Auto"
+                  ScrollViewer.CanContentScroll="False">
+            <ListView.View>
+                <GridView>
+                    <GridView.Columns>
+                        <GridViewColumn Header="Neurons" >
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBox Text="{Binding Path=NeuronsCount}" TextWrapping="Wrap" Margin="0"></TextBox>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="Bias" >
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox IsChecked="{Binding Path=HasBias}"  Margin="0"></CheckBox>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn>
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="Delete" Click="DeleteLayer_OnClick"></Button>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn>
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="Add" Click="AddLayer_OnClick"></Button>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView.Columns>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <ListView Name="RunResultsListView" Grid.Row="0" Grid.Column="2" Grid.RowSpan="4" 
+                  ItemsSource="{Binding}" 
+                  DataContext="{Binding RunResults}"
+                  VerticalContentAlignment="Top"
+                  ScrollViewer.VerticalScrollBarVisibility="Auto"
+                  ScrollViewer.CanContentScroll="False">
+            <ListView.View>
+                <GridView>
+                    <GridView.Columns>
+                        <GridViewColumn Header="Ex" DisplayMemberBinding="{Binding Expected, Mode=OneWay}" />
+                        <GridViewColumn Header="Img" >
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Image Source="{Binding Path=ImageBitmap, Mode=OneWay}" Height="25"></Image>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="Act" DisplayMemberBinding="{Binding Actual, Mode=OneWay}" />
+                        <GridViewColumn Header="?" >
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox IsChecked="{Binding Path=IsRightResult, Mode=OneWay}" IsEnabled="False" Margin="0"></CheckBox>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="%" >
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=ActualPercentage}" MinWidth="50" TextWrapping="Wrap"  Margin="0" HorizontalAlignment="Right"></TextBlock>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView.Columns>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <ListView Name="FullTestResultsListView" Grid.Row="0" Grid.Column="3" Grid.RowSpan="4" 
+                  ItemsSource="{Binding}" 
+                  DataContext="{Binding FullTestResults}"
+                  VerticalContentAlignment="Top"
+                  ScrollViewer.VerticalScrollBarVisibility="Auto"
+                  ScrollViewer.CanContentScroll="False">
+            <ListView.View>
+                <GridView>
+                    <GridView.Columns>
+                        <GridViewColumn Header="ClassError" DisplayMemberBinding="{Binding ClassificationError, Mode=OneWay}" />
+                        <GridViewColumn Header="MSE" DisplayMemberBinding="{Binding Mse, Mode=OneWay}" />
+                        <GridViewColumn Header="CrossEntropy" DisplayMemberBinding="{Binding CrossEntropy, Mode=OneWay}" />
+                    </GridView.Columns>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
     </Grid>
 </Window>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

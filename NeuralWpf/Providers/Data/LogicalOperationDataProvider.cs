@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Neural.Core.Providers;
 
-//using System.Windows.Forms;
-//using NeuralNetwork.UI.Drawers;
-
 namespace NeuralWpf.Providers.Data
 {
     public class LogicalOperationDataProvider : IDataProvider
@@ -23,15 +20,6 @@ namespace NeuralWpf.Providers.Data
 
         private Func<bool, bool, bool> generator;
         private int internalVal;
-
-        //public LogicalOperationDataProvider(ComboBox driverComboBox)
-        //{
-        //    driverComboBox.DataSource = generatorOptions;
-        //    driverComboBox.DisplayMember = "Text";
-        //    driverComboBox.SelectedValueChanged += (sender, args) =>
-        //        generator = ((LogicalOperatorComboBoxItem)driverComboBox.SelectedItem).Generator;
-        //    generator = ((LogicalOperatorComboBoxItem)driverComboBox.SelectedItem).Generator;
-        //}
 
         public int InputNeuronsCount { get; } = 2;
 
@@ -63,7 +51,5 @@ namespace NeuralWpf.Providers.Data
             };
             return new NetworkData(input, output);
         }
-
-        //public IDrawer ResultDrawingFactory(List<double> input, List<double> expected, List<double> actual) => new LogicalDrawer(input, expected, actual);
     }
 }

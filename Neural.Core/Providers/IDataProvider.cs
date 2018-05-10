@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Neural.Core.Helpers;
-
-//using NeuralNetwork.UI.Drawers;
+﻿using System.Collections.Generic;
 
 namespace Neural.Core.Providers
 {
@@ -18,7 +13,5 @@ namespace Neural.Core.Providers
         NetworkData GetTestData();
 
         IEnumerable<NetworkData> GetAllTestData();
-
-        //IDrawer ResultDrawingFactory(List<double> input, List<double> expected, List<double> actual);
     }
 }
