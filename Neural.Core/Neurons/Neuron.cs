@@ -66,7 +66,7 @@ namespace Neural.Core.Neurons
         public void InitWeights()
         {
             var prevLayerSize = Layer.PreviousLayer?.Size ?? 0;
-            var nextLayerSize = Layer.PreviousLayer?.Size ?? 0;
+            var nextLayerSize = Layer.NextLayer?.Size ?? 0;
             for (var i = Weights.Count - 1; i >= 0; i--)
             {
                 Weights[i] = Network.Activation.GetInitWeight(prevLayerSize, nextLayerSize);

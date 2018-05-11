@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Neural.Core.Providers;
 
-//using NeuralNetwork.Data;
-//using NeuralNetwork.UI.Drawers;
-
 namespace Neural.Mnist
 {
     public class MnistDataProvider : IDataProvider
@@ -16,30 +13,25 @@ namespace Neural.Mnist
 
         public int OutputNeuronsCount { get; } = 10;
 
-        private readonly List<List<double>> trainInputs = MnistData.TrainImages.Select(x => x.ToDoubles()).ToList();
+        private List<double> ImageToList(byte[] image) => image.ToDoubles();
 
-        private readonly List<List<double>> trainOutputs =
-            MnistData.TrainLabels.Select(x => Enumerable.Range(0, 10).Select(y => y == x ? 1D : 0D).ToList()).ToList();
+        private List<double> LabelToList(byte label) => Enumerable.Range(0, 10).Select(x => x == label ? 1D : 0D).ToList();
 
-        private readonly List<List<double>> testInputs = MnistData.TestImages.Select(x => x.ToDoubles()).ToList();
-
-        private readonly List<List<double>> testOutputs =
-            MnistData.TestLabels.Select(x => Enumerable.Range(0, 10).Select(y => y == x ? 1D : 0D).ToList()).ToList();
+        private NetworkData ToNetworkData(byte[] image, byte label) => new NetworkData(ImageToList(image), LabelToList(label));
 
         public NetworkData GetTrainData()
         {
-            var index = R.Next(trainInputs.Count);
-            return new NetworkData(trainInputs[index], trainOutputs[index]);
+            var index = R.Next(MnistData.TrainImages.Count);
+            return ToNetworkData(MnistData.TrainImages[index], MnistData.TrainLabels[index]);
         }
 
         public NetworkData GetTestData()
         {
-            var index = R.Next(testInputs.Count);
-            return new NetworkData(testInputs[index], testOutputs[index]);
+            var index = R.Next(MnistData.TestImages.Count);
+            return ToNetworkData(MnistData.TestImages[index], MnistData.TestLabels[index]);
         }
 
-        public IEnumerable<NetworkData> GetAllTestData() => testInputs.Zip(testOutputs, (i, o) => new NetworkData(i, o));
-        
-        //public IDrawer ResultDrawingFactory(List<double> input, List<double> expected, List<double> actual) => new MnistDrawer(input, expected, actual);
+        public IEnumerable<NetworkData> GetAllTestData() =>
+            MnistData.TestImages.Zip(MnistData.TestLabels, ToNetworkData);
     }
 }

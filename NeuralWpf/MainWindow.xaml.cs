@@ -20,6 +20,8 @@ namespace NeuralWpf
     {
         private Network Network => Driver.Network;
 
+        public Network PublicNetwork => Network.Clone();
+
         private NetworkController Driver { get; }
 
         private ISettingsProvider SettingsProvider { get; }
@@ -44,12 +46,12 @@ namespace NeuralWpf
 
         private void Driver_ReadyToFullTest(object sender, EventArgs e)
         {
-            FullTest();
+            FullTest(Network);
         }
 
-        private async void FullTest_OnClick(object sender, EventArgs e) => await RunWithUiLock(FullTest);
+        private async void FullTest_OnClick(object sender, EventArgs e) => await RunWithUiLock(() => FullTest(Network));
 
-        private void FullTest()
+        private void FullTest(Network network)
         {
             var total = 0;
             var valid = 0;
@@ -57,7 +59,7 @@ namespace NeuralWpf
             var crossEntropy = 0D;
             foreach (var testData in DataProvider.GetAllTestData())
             {
-                var actual = Network.Run(testData.Input);
+                var actual = network.Run(testData.Input);
                 if (actual == null)
                 {
                     return;
@@ -77,17 +79,18 @@ namespace NeuralWpf
             Application.Current.Dispatcher.Invoke(() => ViewModel.FullTestResults.Add(newFullTestResult));
         }
 
-        private void Driver_ReadyToRun(object sender, EventArgs e) => RunWithTestData();
+        private void Driver_ReadyToRun(object sender, EventArgs e) => RunWithTestData(Network);
 
         private async void Run_OnClick(object sender, EventArgs e) => await RunWithUiLock(() =>
         {
+            var network = Network;
             for (int i = 0; i < 10; i++)
             {
-                RunWithTestData();
+                RunWithTestData(network);
             }
         });
 
-        private void RunWithTestData()
+        private void RunWithTestData(Network network)
         {
             var testData = DataProvider.GetTestData();
             var actual = Network.Run(testData.Input);

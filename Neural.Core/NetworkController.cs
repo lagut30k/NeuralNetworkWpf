@@ -15,8 +15,10 @@ namespace Neural.Core
         public event EventHandler ReadyToRun;
         public event EventHandler ReadyToFullTest;
 
-        public Network Network { get; private set; }
+        private Network InternalNetwork { get; set; }
 
+        public Network Network { get; private set; }
+       
         public NetworkController(ISettingsProvider settingsProvider, Func<IDataProvider> dataProviderFactory)
         {
             this.settingsProvider = settingsProvider;
@@ -33,16 +35,19 @@ namespace Neural.Core
             for (var i = 0; i < trainLoops && !stopFlag; i++)
             {
                 var data = dataProvider.GetTrainData();
-                Network.Train(data.Input, data.Output);
-                if (i % 250 == 0)
+                InternalNetwork.Train(data.Input, data.Output);
+                if (i % 500 == 0)
                 {
+                    Network = InternalNetwork.Clone();
                     ReadyToRun?.Invoke(this, null);
                 }
                 if ((i + 1) % 10000 == 0)
                 {
+                    Network = InternalNetwork.Clone();
                     ReadyToFullTest?.Invoke(this, null);
                 }
             }
+            Network = InternalNetwork.Clone();
         }
 
         public void Stop()
@@ -52,11 +57,11 @@ namespace Neural.Core
 
         private bool NeedToReinitNetwork()
         {
-            if (settingsProvider.LayersSettings.Count != Network?.Layers?.Count)
+            if (settingsProvider.LayersSettings.Count != InternalNetwork?.Layers?.Count)
             {
                 return true;
             }
-            return settingsProvider.LayersSettings.Where((t, i) => !IsLayerChanged(t, Network.Layers[i])).Any();
+            return settingsProvider.LayersSettings.Where((t, i) => !IsLayerChanged(t, InternalNetwork.Layers[i])).Any();
         }
 
         private bool IsLayerChanged(LayerSettings settings, Layer layer)
@@ -72,11 +77,12 @@ namespace Neural.Core
         {
             if (NeedToReinitNetwork())
             {
-                Network = new Network(settingsProvider.LayersSettings);
+                InternalNetwork = new Network(settingsProvider.LayersSettings);
+                Network = InternalNetwork.Clone();
             }
-            Network.Moment = settingsProvider.Moment;
-            Network.LearningRate = settingsProvider.LearningRate;
-            Network.DropoutProbability = settingsProvider.DropoutProbability;
+            InternalNetwork.Moment = settingsProvider.Moment;
+            InternalNetwork.LearningRate = settingsProvider.LearningRate;
+            InternalNetwork.DropoutProbability = settingsProvider.DropoutProbability;
         }
     }
 }

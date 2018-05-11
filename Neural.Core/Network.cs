@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Neural.Core.Activation;
 using Neural.Core.Helpers;
 using Neural.Core.Layers;
@@ -35,9 +36,49 @@ namespace Neural.Core
             {
                 var prev = Layers.Last();
                 Layers.Add(new HiddenLayer(layerParams, this, prev));
+                prev.InitNeuronsWeights();
             }
-            Layers.Add(new OutputLayer(layersHyperParameters.Last(), this, Layers.Last()));
+            var lastHidden = Layers.Last();
+            lastHidden.InitNeuronsWeights();
+            Layers.Add(new OutputLayer(layersHyperParameters.Last(), this, lastHidden));
+            Layers.Last().InitNeuronsWeights();
         }
+
+        protected Network(Network initialNetwork)
+        {
+            var inputLayerSettings = LayerToLayerSettings(initialNetwork.InputLayer);
+            var inputLayer = new InputLayer(inputLayerSettings, this);
+            Layers = new List<Layer>(initialNetwork.Layers.Count) { inputLayer };
+            foreach (var initialLayer in initialNetwork.HiddenLayers)
+            {
+                var prev = Layers.Last();
+                var layerSettings = LayerToLayerSettings(initialLayer);
+                Layers.Add(new HiddenLayer(layerSettings, this, prev));
+            }
+            var outputLayerSettings = LayerToLayerSettings(initialNetwork.OutputLayer);
+            Layers.Add(new OutputLayer(outputLayerSettings, this, Layers.Last()));
+
+            foreach (var (next, prev) in Layers.Zip(initialNetwork.Layers, (next, prev) => (next, prev)))
+            {
+                Parallel.ForEach(next.Neurons.Zip(prev.Neurons, (nextNeuron, prevNeuron) => new {nextNeuron, prevNeuron}), x =>
+                {
+                    x.nextNeuron.Bias = x.prevNeuron.Bias;
+                    x.nextNeuron.Weights = new List<double>(x.prevNeuron.Weights);
+                });
+                //foreach (var (nextNeuron, prevNeuron) in next.Neurons.Zip(prev.Neurons, (nextNeuron, prevNeuron) => (nextNeuron, prevNeuron)))
+                //{
+                //    nextNeuron.Bias = prevNeuron.Bias;
+                //    nextNeuron.Weights = new List<double>(prevNeuron.Weights);
+                //}
+            }
+        }
+
+        public Network Clone()
+        {
+            return new Network(this);
+        }
+
+        private LayerSettings LayerToLayerSettings(Layer l) => new LayerSettings { HasBias = l.HasBias, NeuronsCount = l.Size };
 
         public List<double> Run(List<double> input)
         {

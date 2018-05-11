@@ -9,8 +9,6 @@ namespace Neural.Core.Layers
 {
     public abstract class Layer
     {
-        private Layer nextLayer;
-
         private static readonly RNGCryptoServiceProvider rngCsp = new RNGCryptoServiceProvider();
 
         public List<Neuron> Neurons { get; set; }
@@ -21,21 +19,13 @@ namespace Neural.Core.Layers
 
         public Layer PreviousLayer { get; }
 
-        public Layer NextLayer
-        {
-            get => nextLayer;
-            set
-            {
-                nextLayer = value;
-                InitNeuronsWeights();
-            }
-        }
+        public Layer NextLayer { get; set; }
 
         public Network Network { get; }
 
         protected abstract Neuron NeuronFactory(int i);
 
-        protected void InitNeuronsWeights()
+        public void InitNeuronsWeights()
         {
             foreach (var neuron in Neurons)
             {
